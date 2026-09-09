@@ -61,8 +61,10 @@ jobs:
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: /
+          # beat=6 rather than beat=3: the 5 s task watchdog must stay quiet,
+          # so the simulation has to outlive it before passing.
           timeout: 20000
-          expect_text: 'beat=3'
+          expect_text: 'beat=6'
           fail_text: 'E ('
 
       - name: keep the firmware image

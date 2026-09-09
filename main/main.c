@@ -237,11 +237,18 @@ void app_main(void)
          * after 5 s, and the device reboots in a loop - which is a far more
          * common field failure than the volatile bug this program is about.
          *
+         * The duration matters as much as the call: pdMS_TO_TICKS truncates,
+         * so at the default 100 Hz tick rate pdMS_TO_TICKS(1) is 0 ticks, and
+         * vTaskDelay(0) yields without blocking - the idle task starves and
+         * the watchdog fires anyway. This file shipped that exact bug as
+         * pdMS_TO_TICKS(1); the simulator caught it at t=5s. One full tick
+         * (10 ms) is ample against a 1 Hz beat.
+         *
          * Note for the volatile discussion: vTaskDelay is an opaque call, and a
          * call is a compiler barrier. It therefore MASKS the missing-volatile
          * bug on s_tick_pending, which is exactly why that bug ships. The
          * uncontaminated reproduction lives in experiments/, not here.
          */
-        vTaskDelay(pdMS_TO_TICKS(1));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }

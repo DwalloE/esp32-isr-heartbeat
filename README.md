@@ -87,8 +87,9 @@ I (3296) heartbeat: beat=3 t=3000016us buttons=1  <- press
 | No yield in the main loop | Idle task starved, task watchdog at 5 s, silent reboot loop | comment in `main.c`, watchdog left enabled in `sdkconfig.defaults` |
 | ISR returning `false` after waking a task | Works, but the wakeup waits up to one tick — mysterious latency, no crash | [`docs/isr-discipline.md`](docs/isr-discipline.md) §7 |
 | Publishing `count_value` from an auto-reload alarm | Timestamp pinned near zero; the seqlock faithfully delivers a wrong value | [`docs/torn-read.md`](docs/torn-read.md) postscript — caught by the CI simulation's first run |
+| A yield that rounds to zero: `pdMS_TO_TICKS(1)` at the default 100 Hz tick | 0 ticks — `vTaskDelay(0)` never blocks, idle starves, watchdog fires at 5 s with the yield sitting right there in the loop | comment in `main.c` — caught in the simulator at t=5 s; CI now runs past the watchdog window |
 
-The last three are the interesting ones, because they do not crash.
+The last four are the interesting ones, because they do not crash.
 
 ## Why the reproduction lives in `experiments/` and not in the firmware
 
@@ -110,7 +111,7 @@ evidence; a bug asserted in CI is.
 | `make -C experiments disasm` | Publishes both poll loops as a build artifact | CI, every commit |
 | `make -C test` | Round trip over 7 vectors; control tears; seqlock does not, in 3M reads | CI, every commit |
 | `idf.py build && idf.py uf2` | Firmware compiles for ESP32 under ESP-IDF v5.3 | CI, every commit |
-| Wokwi CI | Simulated ESP32 reaches `beat=3` within 20 s with no error-level log | CI, when `WOKWI_CLI_TOKEN` is set |
+| Wokwi CI | Simulated ESP32 reaches `beat=6` within 20 s with no error-level log — long enough that the 5 s task watchdog must stay quiet | CI, when `WOKWI_CLI_TOKEN` is set |
 
 Host tests need only `gcc` and `make`. The simulation step needs a free
 [Wokwi CI token](https://wokwi.com/dashboard/ci) and is skipped without one, so the suite still
