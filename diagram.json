@@ -51,7 +51,7 @@
     [ "esp:4", "la1:D1", "blue", [ "v0" ] ],
     [ "esp:GND.3", "la1:GND", "black", [ "v0" ] ],
 
-    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
-    [ "esp:RX0", "$serialMonitor:TX", "", [] ]
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ]
   ]
 }
