@@ -1,0 +1,26 @@
+# Pinned so that a clone reproduces the build this repo was tested with.
+
+CONFIG_IDF_TARGET="esp32"
+
+# -O2. The whole point of this project is a bug that only appears once the
+# optimiser is allowed to do its job, so building at -Og would hide it.
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
+
+# Keep the serial log deterministic for the CI assertion in
+# .github/workflows/ci.yml, which greps for "beat=3".
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+CONFIG_LOG_TIMESTAMP_SOURCE_RTOS=y
+
+# 5 s task watchdog on both cores. Left ON deliberately: if you remove the
+# vTaskDelay() from the main loop this is what tells you, instead of a silent
+# reboot loop in the field.
+CONFIG_ESP_TASK_WDT_EN=y
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=5
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=y
+
+# Canary-based stack overflow detection. Project 04 in the portfolio abuses
+# this on purpose; here it just needs to be on.
+CONFIG_FREERTOS_CHECK_STACKOVERFLOW_CANARY=y
+
+# Wokwi's virtual ESP32 is a 4 MB module.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
