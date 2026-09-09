@@ -6,10 +6,7 @@ interviews are actually about.
 
 [![ci](https://github.com/DwalloE/esp32-isr-heartbeat/actions/workflows/ci.yml/badge.svg)](https://github.com/DwalloE/esp32-isr-heartbeat/actions/workflows/ci.yml)
 
-> **TODO before pushing:** record the Wokwi simulation — LED blinking, serial log scrolling, a
-> button press appearing in the count — save it as `docs/demo.gif`, and replace this block with
-> `![demo](docs/demo.gif)`. Convert with
-> `ffmpeg -i in.mp4 -vf "fps=12,scale=720:-1" -loop 0 docs/demo.gif`.
+![demo](docs/demo.gif)
 
 ## Run it in your browser
 
