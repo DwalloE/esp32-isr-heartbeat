@@ -12,7 +12,12 @@ interviews are actually about.
 
 No hardware needed.
 
-**Simulator:** *(paste your Wokwi project link here after saving the project)*
+**Simulator:** [wokwi.com/projects/474713120227154945](https://wokwi.com/projects/474713120227154945)
+— press play, watch it beat, click the button. One honest caveat: Wokwi's browser editor compiles
+Arduino, not ESP-IDF, so that project runs [`browser-demo/sketch.ino`](browser-demo/sketch.ino), a
+clearly-labeled port with the same ISR structure and the same seqlock. The canonical ESP-IDF
+firmware is [`main/main.c`](main/main.c) — CI builds it and runs it on a simulated ESP32 on every
+commit, which is the run the assertions and the GIF above come from.
 
 **Locally:**
 
@@ -148,6 +153,7 @@ docs/torn-read.md      the measurement, the fences, and the four alternatives.
 docs/isr-discipline.md eight rules, each with the field failure that motivates it.
 diagram.json           Wokwi circuit.
 wokwi.toml             simulator config, including VCD capture.
+browser-demo/          Arduino-core port for the shareable Wokwi project. A demo, not the firmware.
 ```
 
 MIT licensed.
