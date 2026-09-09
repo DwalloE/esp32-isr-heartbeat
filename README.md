@@ -37,10 +37,10 @@ sees the flag, toggles the LED, and logs the beat with the microsecond timestamp
 count. A GPIO ISR on a pushbutton counts presses, debounced by timestamp.
 
 ```
-I (312) heartbeat: up: led=gpio2 button=gpio4 tick=1Hz
-I (1315) heartbeat: beat=1 t=1000000us buttons=0
-I (2315) heartbeat: beat=2 t=2000000us buttons=0
-I (3315) heartbeat: beat=3 t=3000000us buttons=1  <- press
+I (296) heartbeat: up: led=gpio2 button=gpio4 tick=1Hz
+I (1296) heartbeat: beat=1 t=1000002us buttons=0
+I (2296) heartbeat: beat=2 t=2000013us buttons=0
+I (3296) heartbeat: beat=3 t=3000016us buttons=1  <- press
 ```
 
 ## Wiring
