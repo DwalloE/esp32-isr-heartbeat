@@ -34,7 +34,8 @@ idf.py build && idf.py uf2     # -> build/uf2.bin, which Wokwi flashes
 
 ## What it does
 
-A GPTimer alarm fires at 1 Hz. Its ISR publishes the timer count and raises a flag. The main loop
+A GPTimer alarm fires at 1 Hz. Its ISR publishes the monotonic microsecond timestamp and raises a
+flag. The main loop
 sees the flag, toggles the LED, and logs the beat with the microsecond timestamp and the button
 count. A GPIO ISR on a pushbutton counts presses, debounced by timestamp.
 
