@@ -1,0 +1,76 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # The two claims this repo makes about C semantics, asserted on every commit.
+  # No hardware, no simulator, no secrets - runs on a fork.
+  host:
+    name: host tests (volatile + seqlock)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: reproduce the missing-volatile bug, and its absence
+        run: make -C experiments verify
+
+      - name: publish the disassembly of both poll loops
+        run: make -C experiments disasm
+
+      - name: seqlock - control case must tear, seqlock case must not
+        run: make -C test
+
+      - name: keep the disassembly as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: poll-loop-disassembly
+          path: experiments/build/*.asm
+          if-no-files-found: error
+
+  # Builds the real firmware and runs it on a simulated ESP32.
+  firmware:
+    name: build + simulate (ESP32)
+    runs-on: ubuntu-latest
+    env:
+      WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build with ESP-IDF v5.3
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.3
+          target: esp32
+          command: idf.py build && idf.py uf2
+
+      - name: report image size
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.3
+          target: esp32
+          command: idf.py size
+
+      # Skipped automatically on forks and on clones without the secret set.
+      # Get a free token at https://wokwi.com/dashboard/ci
+      - name: simulate and assert the serial output
+        if: env.WOKWI_CLI_TOKEN != ''
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: /
+          timeout: 20000
+          expect_text: 'beat=3'
+          fail_text: 'E ('
+
+      - name: keep the firmware image
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            build/uf2.bin
+            build/esp32-isr-heartbeat.elf
+            build/esp32-isr-heartbeat.map
+          if-no-files-found: warn
