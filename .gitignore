@@ -1,0 +1,19 @@
+# ESP-IDF
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+
+# Host builds
+test/build/
+experiments/build/
+
+# Simulator output
+*.vcd
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
