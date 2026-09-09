@@ -1,0 +1,19 @@
+# Wokwi simulator / Wokwi CI configuration.
+#
+# `firmware` points at a single image containing bootloader + partition table +
+# application, because Wokwi flashes one file. `idf.py uf2` produces exactly
+# that at build/uf2.bin:
+#
+#     idf.py build && idf.py uf2
+#
+# `elf` is optional but worth having: it gives the simulator symbol names, so a
+# crash shows you a backtrace instead of addresses.
+
+[wokwi]
+version = 1
+firmware = 'build/uf2.bin'
+elf = 'build/esp32-isr-heartbeat.elf'
+
+# Where the logic analyzer writes its capture. Open it in PulseView or GTKWave
+# to check the LED edge timing against the 1 Hz claim.
+vcdFile = 'heartbeat.vcd'
