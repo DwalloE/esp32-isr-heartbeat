@@ -86,8 +86,9 @@ I (3315) heartbeat: beat=3 t=3000000us buttons=1  <- press
 | ISR not in IRAM | Crash only during OTA or flash erase | [`docs/isr-discipline.md`](docs/isr-discipline.md) |
 | No yield in the main loop | Idle task starved, task watchdog at 5 s, silent reboot loop | comment in `main.c`, watchdog left enabled in `sdkconfig.defaults` |
 | ISR returning `false` after waking a task | Works, but the wakeup waits up to one tick — mysterious latency, no crash | [`docs/isr-discipline.md`](docs/isr-discipline.md) §7 |
+| Publishing `count_value` from an auto-reload alarm | Timestamp pinned near zero; the seqlock faithfully delivers a wrong value | [`docs/torn-read.md`](docs/torn-read.md) postscript — caught by the CI simulation's first run |
 
-The last two are the interesting ones, because they do not crash.
+The last three are the interesting ones, because they do not crash.
 
 ## Why the reproduction lives in `experiments/` and not in the firmware
 

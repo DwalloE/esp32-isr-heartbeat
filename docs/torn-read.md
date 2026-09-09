@@ -138,3 +138,27 @@ Related: `s_button_events` in `main.c` is a `volatile uint32_t` with **no** seql
 correct — one naturally-aligned 32-bit word on a 32-bit core cannot tear. The `++` is safe only
 because the ISR is the sole writer. Being able to say why two shared variables in the same file
 get different treatment is the point of the whole exercise.
+
+## Postscript: the bug the simulator caught in the same variable
+
+The first simulated CI run printed this:
+
+```
+I (1296) heartbeat: beat=1 t=3us buttons=0
+I (2296) heartbeat: beat=2 t=2us buttons=0
+```
+
+The seqlock delivered every one of those values perfectly intact — and every one of them was
+wrong. The alarm is configured with `auto_reload_on_alarm`, so the hardware sets the counter back
+to `reload_count` (0) *before* the callback runs. `edata->count_value` at that point is not "the
+time of this tick"; it is the dispatch latency since the reload, a handful of microseconds. The
+published "timestamp" was pinned near zero forever, monotonic in nothing, and no concurrency
+mechanism in the world was going to fix it, because it was the correct handoff of an incorrect
+value.
+
+The fix (in `on_timer_alarm`) accumulates the nominal period per alarm and adds the measured
+latency back on top. The reason it is worth a postscript in this document: a torn read and a
+wrong-by-construction value produce similar-looking downstream garbage, and the reflex after
+writing a seqlock is to suspect the handoff. Check what the value *is* before reasoning about how
+it travels — and assert the actual output in CI, which is what caught this one on the first run
+the firmware ever made outside a compiler.

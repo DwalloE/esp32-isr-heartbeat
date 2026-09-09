@@ -59,7 +59,7 @@ static const char *TAG = "heartbeat";
 static volatile bool s_tick_pending = false;
 
 /*
- * The timer count at the moment of the last tick, in microseconds.
+ * The monotonic time of the last tick, in microseconds since the timer started.
  *
  * NEEDS MORE THAN volatile. 64 bits on a 32-bit core is two stores. volatile
  * guarantees the compiler emits them; it guarantees nothing about an interrupt
@@ -83,6 +83,12 @@ static volatile uint32_t s_button_events = 0;
 /* Touched only by the GPIO ISR. Not shared, therefore not volatile. */
 static uint64_t s_last_button_us = 0;
 
+/* Touched only by the timer ISR. Not shared, therefore not volatile.
+ * Accumulates the nominal period per alarm, because auto-reload zeroes the
+ * hardware counter before the callback runs - see the note in on_timer_alarm
+ * and the postscript in docs/torn-read.md. */
+static uint64_t s_alarm_base_us = 0;
+
 /* ------------------------------------------------------------------------- *
  * Interrupt handlers
  * ------------------------------------------------------------------------- */
@@ -104,7 +110,12 @@ static bool IRAM_ATTR on_timer_alarm(gptimer_handle_t timer,
     (void)timer;
     (void)user_ctx;
 
-    seqlock_u64_store(&s_last_tick_us, (uint64_t)edata->count_value);
+    /* With auto_reload_on_alarm the counter is back to reload_count (0) by the
+     * time this callback runs, so edata->count_value is the dispatch latency
+     * since the reload - a few microseconds - not a timestamp. Reconstruct the
+     * monotonic time as (alarms so far) * period + that latency. */
+    s_alarm_base_us += TIMER_RES_HZ / TICK_HZ;
+    seqlock_u64_store(&s_last_tick_us, s_alarm_base_us + (uint64_t)edata->count_value);
     s_tick_pending = true;
 
     /* false: no higher-priority task was woken, so no yield is required. */
