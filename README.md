@@ -4,13 +4,12 @@ A 1 Hz LED heartbeat on an ESP32, driven by a hardware timer ISR — deliberatel
 program in embedded software, written so that the only things left in it are the three that
 interviews are actually about.
 
-[![ci](https://github.com/USERNAME/esp32-isr-heartbeat/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/esp32-isr-heartbeat/actions/workflows/ci.yml)
+[![ci](https://github.com/DwalloE/esp32-isr-heartbeat/actions/workflows/ci.yml/badge.svg)](https://github.com/DwalloE/esp32-isr-heartbeat/actions/workflows/ci.yml)
 
 > **TODO before pushing:** record the Wokwi simulation — LED blinking, serial log scrolling, a
 > button press appearing in the count — save it as `docs/demo.gif`, and replace this block with
 > `![demo](docs/demo.gif)`. Convert with
 > `ffmpeg -i in.mp4 -vf "fps=12,scale=720:-1" -loop 0 docs/demo.gif`.
-> Also replace `USERNAME` in the badge and links above and below.
 
 ## Run it in your browser
 
@@ -136,7 +135,7 @@ runs on a fork.
 
 First of eleven in a deliberately-sequenced embedded portfolio, moving from ESP-IDF (which I ship
 professionally on 10,000+ fielded devices) into bare-metal STM32 register work, Zephyr on nRF52840,
-and embedded Linux. Index: [`embedded-portfolio`](https://github.com/USERNAME/embedded-portfolio).
+and embedded Linux. Index: [`embedded-portfolio`](https://github.com/DwalloE/embedded-portfolio).
 
 ## Layout
 
